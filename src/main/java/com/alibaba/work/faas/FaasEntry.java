@@ -96,12 +96,13 @@ public class FaasEntry extends AbstractEntry {
 		/**
 		 * 返回的JSONObject并不是一定要带success、result、error, 下面的代码只是示例, 具体返回哪些key-value由您自己决定, 尽量与您在宜搭连接器工厂里配置的出参结构保持一致即可
 		 */
-		JSONObject result = new JSONObject();
-		result.put("success",true);
-		result.put("result","恭喜您, 成功调用宜搭FASS连接器!");
-		result.put("error","");
+		// JSONObject result = new JSONObject();
+		// result.put("success",true);
+		// result.put("result","恭喜您, 成功调用宜搭FASS连接器!");
+		// result.put("error","");
 
-		return result;
+		// return result;
+		return demo();
 	}
 
 	/**
@@ -209,4 +210,40 @@ public class FaasEntry extends AbstractEntry {
 
 		return DingOpenApiUtil.batchSaveFormData(request);
     }
+
+	private JSONObject demo(){
+		String host = "https://ali-weather.showapi.com";
+	    String path = "/day15";
+	    String method = "GET";
+	    String appcode = "4f23d379e8da49988f712ae71acc3c2b";
+	    Map<String, String> headers = new HashMap<String, String>();
+	    //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
+	    headers.put("Authorization", "APPCODE " + appcode);
+	    Map<String, String> querys = new HashMap<String, String>();
+	    querys.put("area", "武汉");
+	    //querys.put("areaCode", "530700");
+
+
+	    try {
+	    	/**
+	    	* 重要提示如下:
+	    	* HttpUtils请从
+	    	* https://github.com/aliyun/api-gateway-demo-sign-java/blob/master/src/main/java/com/aliyun/api/gateway/demo/util/HttpUtils.java
+	    	* 下载
+	    	*
+	    	* 相应的依赖请参照
+	    	* https://github.com/aliyun/api-gateway-demo-sign-java/blob/master/pom.xml
+	    	*/
+	    	HttpResponse response = HttpUtils.doGet(host, path, method, headers, querys);
+	    	System.out.println(response.toString());
+	    	//获取response的body
+	    	System.out.println(EntityUtils.toString(response.getEntity()));
+			//EntityUtils.toString(response.getEntity());
+			JSONObject formData = new JSONObject();
+			formData.put("json", EntityUtils.toString(response.getEntity()));
+			return formData;
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    }
+	}
 }
